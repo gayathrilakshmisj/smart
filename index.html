@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PocketSmart AI – Smart Budget and Recommendation Assistant</title>
+
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header>
+    <div class="brand-group">
+      <div class="brand-logo">
+        <i class="fa-solid fa-wallet"></i>
+      </div>
+      <div>
+        <div class="brand-title">
+          PocketSmart <span class="ai-badge"><i class="fa-solid fa-sparkles"></i> AI</span>
+        </div>
+        <div class="brand-subtitle">Smart Budget and Recommendation Assistant</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- Currency Badge -->
+      <div class="currency-pill">
+        <i class="fa-solid fa-indian-rupee-sign" style="color: var(--primary);"></i>
+        <span>INR (₹)</span>
+      </div>
+
+      <!-- Gemini Tag -->
+      <div class="gemini-pill">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span>Google Gemini Pro</span>
+      </div>
+
+      <!-- Dynamic User Profile Trigger -->
+      <div class="profile-container">
+        <div class="user-profile" id="userProfileBtn" title="Click to switch or edit profile">
+          <div class="user-avatar" id="headerAvatar">RS</div>
+          <div class="user-info">
+            <div class="user-name" id="headerUserName">Rahul Sharma</div>
+            <div class="user-role" id="headerUserRole">Student & Developer</div>
+          </div>
+          <i class="fa-solid fa-chevron-down profile-dropdown-icon"></i>
+        </div>
+
+        <!-- Profile Dropdown Menu -->
+        <div class="user-dropdown-menu" id="userDropdown">
+          <div class="dropdown-header">Switch Active Profile</div>
+          <div class="user-option" data-user-id="rahul">
+            <div class="opt-avatar">RS</div>
+            <div class="opt-meta">
+              <strong>Rahul Sharma</strong>
+              <small>Student & Developer</small>
+            </div>
+            <i class="fa-solid fa-check opt-check"></i>
+          </div>
+          <div class="user-option" data-user-id="priya">
+            <div class="opt-avatar">PN</div>
+            <div class="opt-meta">
+              <strong>Priya Nair</strong>
+              <small>Product Designer</small>
+            </div>
+            <i class="fa-solid fa-check opt-check"></i>
+          </div>
+          <div class="user-option" data-user-id="ananya">
+            <div class="opt-avatar">AP</div>
+            <div class="opt-meta">
+              <strong>Ananya Patel</strong>
+              <small>Freelance Tech Lead</small>
+            </div>
+            <i class="fa-solid fa-check opt-check"></i>
+          </div>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-btn-settings" id="openSettingsFromDropdown">
+            <i class="fa-solid fa-gear"></i> Profile & Budget Settings
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <!-- LEFT SIDEBAR -->
+    <aside>
+      <ul class="nav-list">
+        <li class="nav-item active" data-target="dashboard">
+          <a href="#dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+        </li>
+        <li class="nav-item" data-target="add-expense">
+          <a href="#add-expense-section"><i class="fa-solid fa-circle-plus"></i> Add Expense</a>
+        </li>
+        <li class="nav-item" data-target="analysis">
+          <a href="#spending-overview"><i class="fa-solid fa-chart-line"></i> Budget & Analysis</a>
+        </li>
+        <li class="nav-item" data-target="ai-tips">
+          <a href="#gemini-section"><i class="fa-solid fa-robot"></i> AI Tips</a>
+        </li>
+        <li class="nav-item" id="sidebarSettingsBtn">
+          <a href="javascript:void(0)"><i class="fa-solid fa-sliders"></i> Settings</a>
+        </li>
+      </ul>
+
+      <!-- Interactive Goal Widget -->
+      <div class="sidebar-widget">
+        <i class="fa-solid fa-piggy-bank widget-icon"></i>
+        <h4 id="widgetGoalTitle">Monthly Goal</h4>
+        <p id="widgetGoalText">Saved ₹18,500 of ₹25,000</p>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="widgetProgressBar"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main>
+      <!-- Welcome Message -->
+      <div class="welcome-banner">
+        <div class="welcome-text">
+          <h1 id="welcomeHeadline">Welcome back, Rahul!</h1>
+          <p>Track your expenses, manage your budget and get smart recommendations with PocketSmart AI.</p>
+        </div>
+        <div class="time-indicator">
+          <i class="fa-regular fa-calendar-check" style="color: var(--primary);"></i>
+          <span id="currentDateDisplay">Financial Cycle: Active</span>
+        </div>
+      </div>
+
+      <!-- SUMMARY CARDS -->
+      <div class="summary-grid">
+        <!-- Monthly Income Card -->
+        <div class="card">
+          <div class="stat-header">
+            <span class="stat-title">Monthly Income</span>
+            <div class="stat-icon icon-income">
+              <i class="fa-solid fa-arrow-trend-up"></i>
+            </div>
+          </div>
+          <div class="stat-amount" id="val-income">₹0.00</div>
+          <div class="stat-footer badge-up">
+            <i class="fa-solid fa-circle-check"></i> Verified inflows
+          </div>
+        </div>
+
+        <!-- Total Expenses Card -->
+        <div class="card">
+          <div class="stat-header">
+            <span class="stat-title">Total Expenses</span>
+            <div class="stat-icon icon-expense">
+              <i class="fa-solid fa-arrow-trend-down"></i>
+            </div>
+          </div>
+          <div class="stat-amount" id="val-expenses">₹0.00</div>
+          <div class="stat-footer badge-down" id="val-expense-ratio">
+            <i class="fa-solid fa-chart-line"></i> 0% of income
+          </div>
+        </div>
+
+        <!-- Remaining Balance Card -->
+        <div class="card">
+          <div class="stat-header">
+            <span class="stat-title">Remaining Balance</span>
+            <div class="stat-icon icon-balance">
+              <i class="fa-solid fa-coins"></i>
+            </div>
+          </div>
+          <div class="stat-amount" id="val-balance">₹0.00</div>
+          <div class="stat-footer badge-up">
+            <i class="fa-solid fa-shield-heart"></i> Net Liquidity
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM & OVERVIEW DONUT CHART -->
+      <div class="dashboard-grid">
+        <!-- ADD EXPENSE FORM -->
+        <div class="card form-card" id="add-expense-section">
+          <h3>
+            <i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i>
+            Add Expense / Quick Entry
+          </h3>
+          <p class="form-desc">Log debits or credit inflows instantly to update your ledger and visual charts.</p>
+
+          <form id="entryForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="entryType">Entry Type *</label>
+                <select id="entryType" required>
+                  <option value="expense">Expense (Debit -)</option>
+                  <option value="income">Income (Credit +)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="entryAmount">Amount (₹) *</label>
+                <div class="input-wrapper">
+                  <span class="currency-prefix">₹</span>
+                  <input type="number" id="entryAmount" placeholder="e.g. 1500" min="1" step="any" required />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="entryCategory">Category *</label>
+                <select id="entryCategory" required>
+                  <option value="Food">Food & Dining</option>
+                  <option value="Travel">Travel & Fuel</option>
+                  <option value="Shopping">Shopping & Lifestyle</option>
+                  <option value="Bills">Bills & Utilities</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="entryDate">Date *</label>
+                <input type="date" id="entryDate" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="entryDesc">Description / Merchant</label>
+              <input type="text" id="entryDesc" placeholder="e.g. Swiggy order, Petrol, Wi-Fi bill, Bonus" />
+            </div>
+
+            <button type="submit" class="btn-submit">
+              <i class="fa-solid fa-floppy-disk"></i> Save Entry
+            </button>
+          </form>
+        </div>
+
+        <!-- SPENDING OVERVIEW (DONUT CHART) -->
+        <div class="card" id="spending-overview">
+          <div class="stat-header">
+            <h3 style="font-size: 17px; font-weight: 700; display:flex; align-items:center; gap:8px;">
+              <i class="fa-solid fa-chart-pie" style="color: var(--blue-accent);"></i> Spending Overview
+            </h3>
+            <span style="font-size: 12px; color: var(--text-muted); font-weight:600;">Category Breakdown</span>
+          </div>
+
+          <div class="chart-container">
+            <div class="chart-box">
+              <canvas id="spendingDonut"></canvas>
+              <div class="chart-center-label">
+                <span>Total Spent</span>
+                <strong id="donutCenterTotal">₹0</strong>
+              </div>
+            </div>
+
+            <div class="chart-legend">
+              <div class="legend-item">
+                <div class="legend-name">
+                  <div class="legend-dot" style="background: #ef4444;"></div>
+                  <span>Food</span>
+                </div>
+                <div class="legend-val" id="legend-food">₹0 (0%)</div>
+              </div>
+              <div class="legend-item">
+                <div class="legend-name">
+                  <div class="legend-dot" style="background: #3b82f6;"></div>
+                  <span>Travel</span>
+                </div>
+                <div class="legend-val" id="legend-travel">₹0 (0%)</div>
+              </div>
+              <div class="legend-item">
+                <div class="legend-name">
+                  <div class="legend-dot" style="background: #f59e0b;"></div>
+                  <span>Shopping</span>
+                </div>
+                <div class="legend-val" id="legend-shopping">₹0 (0%)</div>
+              </div>
+              <div class="legend-item">
+                <div class="legend-name">
+                  <div class="legend-dot" style="background: #8b5cf6;"></div>
+                  <span>Bills</span>
+                </div>
+                <div class="legend-val" id="legend-bills">₹0 (0%)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECENT EXPENSES TABLE -->
+      <div class="card table-card">
+        <div class="table-header-group">
+          <h3>
+            <i class="fa-solid fa-receipt" style="color: #64748b;"></i>
+            Recent Expenses & Transactions
+            <span class="badge-count" id="tx-count">0 Transactions</span>
+          </h3>
+          <span class="export-link" id="exportBtn">
+            <i class="fa-solid fa-file-arrow-down"></i> Export Summary
+          </span>
+        </div>
+
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Type</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody id="expenseTableBody">
+            <!-- Dynamic entries inserted here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- AI RECOMMENDATIONS SECTION -->
+      <div class="ai-section" id="gemini-section">
+        <div class="illustration-decor">
+          <i class="fa-solid fa-microchip"></i>
+        </div>
+
+        <div class="ai-header">
+          <div class="ai-title-wrap">
+            <div class="ai-icon-large">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <div class="ai-heading-text">
+              <h2>Smart AI Recommendations</h2>
+              <p>Powered by Google Gemini • Dynamic cash flow analysis for current profile</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rec-cards-grid" id="aiRecommendationsGrid">
+          <!-- Dynamic AI recommendation cards rendered via JavaScript -->
+        </div>
+
+        <!-- ASK GEMINI CO-PILOT -->
+        <div class="ask-gemini-box">
+          <div class="ask-header">
+            <i class="fa-solid fa-comments"></i> Ask Gemini Copilot
+          </div>
+
+          <div class="ask-input-row">
+            <input type="text" class="ask-input" id="askGeminiInput" placeholder="Ask about your financial health, spending cuts, or savings plan in INR..." />
+            <button class="btn-gemini-ask" id="btnAskGemini">
+              <i class="fa-solid fa-sparkles"></i> Ask Gemini
+            </button>
+          </div>
+
+          <div class="prompt-suggestions">
+            <span class="prompt-label">Quick prompts:</span>
+            <button class="prompt-chip" data-query="Give me a monthly budget plan">
+              <i class="fa-solid fa-lightbulb"></i> Give me a monthly budget plan
+            </button>
+            <button class="prompt-chip" data-query="Where am I spending the most?">
+              <i class="fa-solid fa-chart-simple"></i> Where am I spending the most?
+            </button>
+            <button class="prompt-chip" data-query="How can I save more money?">
+              <i class="fa-solid fa-piggy-bank"></i> How can I save more money?
+            </button>
+          </div>
+
+          <div class="ai-response-box" id="aiResponseBox">
+            <div class="ai-response-header">
+              <i class="fa-solid fa-robot"></i> Gemini Financial Assistant:
+            </div>
+            <div id="aiResponseText"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-sliders" style="color: var(--primary);"></i> Profile & Budget Settings</h3>
+        <button class="btn-close-modal" id="closeSettingsBtn">&times;</button>
+      </div>
+      <form id="settingsForm">
+        <div class="form-group">
+          <label for="settingsName">Full Name</label>
+          <input type="text" id="settingsName" required />
+        </div>
+        <div class="form-group">
+          <label for="settingsRole">Profession / Role</label>
+          <input type="text" id="settingsRole" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="settingsIncome">Base Monthly Income (₹)</label>
+            <div class="input-wrapper">
+              <span class="currency-prefix">₹</span>
+              <input type="number" id="settingsIncome" min="0" step="any" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="settingsTarget">Monthly Savings Target (₹)</label>
+            <div class="input-wrapper">
+              <span class="currency-prefix">₹</span>
+              <input type="number" id="settingsTarget" min="0" step="any" required />
+            </div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" id="cancelSettingsBtn">Cancel</button>
+          <button type="submit" class="btn-save">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- External Script -->
+  <script src="app.js"></script>
+</body>
+</html>
